@@ -1,13 +1,13 @@
-import type { NextPage } from 'next';
+import type { NextPage } from 'next'
 import {
   Card,
   CardActionArea,
   CardMedia,
   Grid,
   Typography,
-} from '@mui/material';
-import { ShopLayout } from '../components/layouts';
-import { initialData } from '../database/products';
+} from '@mui/material'
+import { ShopLayout } from '../components/layouts'
+import { initialData } from '../database/products'
 
 const Home: NextPage = () => {
   return (
@@ -15,10 +15,10 @@ const Home: NextPage = () => {
       title={'Teslo-Shop - Home'}
       pageDescription={'Encuentra los mejores productos de Teslo aqui'}
     >
-      <Typography variant='h1' component='h1'>
+      <Typography variant="h1" component="h1">
         Tienda
       </Typography>
-      <Typography variant='h2' component='h2' sx={{ mb: 1 }}>
+      <Typography variant="h2" component="h2" sx={{ mb: 1 }}>
         Todos los productos
       </Typography>
 
@@ -28,9 +28,9 @@ const Home: NextPage = () => {
             <Card>
               <CardActionArea>
                 <CardMedia
-                  component='img'
-                  image={ `products/${ product.images[0] }` }
-                  alt={ product.title }
+                  component="img"
+                  image={`products/${product.images[0]}`}
+                  alt={product.title}
                 />
               </CardActionArea>
             </Card>
@@ -38,7 +38,7 @@ const Home: NextPage = () => {
         ))}
       </Grid>
     </ShopLayout>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home

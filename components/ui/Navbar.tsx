@@ -16,9 +16,9 @@ export const Navbar = () => {
   return (
     <AppBar>
       <Toolbar>
-        <NextLink href='/' passHref>
-          <Link display={'flex'} alignItems='center'>
-            <Typography variant='h6'>Teslo |</Typography>
+        <NextLink href="/" passHref>
+          <Link display={'flex'} alignItems="center">
+            <Typography variant="h6">Teslo |</Typography>
             <Typography
               sx={{
                 ml: 0.5,
@@ -49,7 +49,7 @@ export const Navbar = () => {
             </Link>
           </NextLink>
         </Box>
-        
+
         {/* todo flex */}
         <Box flex={1} />
 
@@ -57,10 +57,10 @@ export const Navbar = () => {
           <SearchOutlinedIcon />
         </IconButton>
 
-        <NextLink href='/cart' passHref>
+        <NextLink href="/cart" passHref>
           <Link>
             <IconButton>
-              <Badge badgeContent={2} color='secondary'>
+              <Badge badgeContent={2} color="secondary">
                 <ShoppingCartOutlined />
               </Badge>
             </IconButton>
