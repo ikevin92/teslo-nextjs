@@ -4,7 +4,5 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    //(opcional)
-    // "editor.formatOnType": true
   },
 }
