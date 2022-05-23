@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { ShopLayout } from '../components/layouts';
+import { Box, Typography } from '@mui/material'
+import { ShopLayout } from '../components/layouts'
 
 const Custom404Page = () => {
   return (
@@ -21,7 +21,7 @@ const Custom404Page = () => {
         </Typography>
       </Box>
     </ShopLayout>
-  );
-};
+  )
+}
 
-export default Custom404Page;
+export default Custom404Page
