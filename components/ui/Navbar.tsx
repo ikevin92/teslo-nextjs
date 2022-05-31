@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import NextLink from 'next/link'
 import {
   AppBar,
@@ -6,18 +6,32 @@ import {
   Box,
   Button,
   IconButton,
+  Input,
+  InputAdornment,
   Link,
   Toolbar,
   Typography,
 } from '@mui/material'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
-import { ShoppingCartOutlined } from '@mui/icons-material'
+import {
+  ClearOutlined,
+  SearchOutlined,
+  ShoppingCartOutlined,
+} from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { UiContext } from '../../context'
 
 export const Navbar = () => {
-  const { asPath } = useRouter()
+  const { asPath, push } = useRouter()
   const { toggleSideMenu } = useContext(UiContext)
+
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [isSearchVisible, setIsSearchVisible] = useState<boolean>(false)
+
+  const onSearchTerm = () => {
+    if (searchTerm.trim().length === 0) return
+    push(`/search/${searchTerm}`)
+  }
 
   return (
     <AppBar>
@@ -38,24 +52,35 @@ export const Navbar = () => {
         <Box flex={1} />
 
         {/* todo flex */}
-        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+        <Box
+          className='fadeIn'
+          sx={{
+            display: isSearchVisible ? 'none' : { xs: 'none', sm: 'block' },
+          }}
+        >
           <NextLink href={'/category/men'} passHref>
             <Link>
-              <Button color={asPath.includes('category/men') ? 'primary' : 'info'}>
+              <Button
+                color={asPath.includes('category/men') ? 'primary' : 'info'}
+              >
                 Hombres
               </Button>
             </Link>
           </NextLink>
           <NextLink href={'/category/women'} passHref>
             <Link>
-              <Button color={asPath.includes('category/women') ? 'primary' : 'info'}>
+              <Button
+                color={asPath.includes('category/women') ? 'primary' : 'info'}
+              >
                 Mujeres
               </Button>
             </Link>
           </NextLink>
           <NextLink href={'/category/kid'} passHref>
             <Link>
-              <Button color={asPath.includes('category/kid') ? 'primary' : 'info'}>
+              <Button
+                color={asPath.includes('category/kid') ? 'primary' : 'info'}
+              >
                 Niños
               </Button>
             </Link>
@@ -65,7 +90,42 @@ export const Navbar = () => {
         {/* todo flex */}
         <Box flex={1} />
 
-        <IconButton>
+        {/* Pantallas grandes */}
+        {isSearchVisible ? (
+          <Input
+            className='fadeIn'
+            autoFocus
+            sx={{
+              display: { xs: 'none', sm: 'flex' },
+            }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={(e) => (e.key === 'Enter' ? onSearchTerm() : null)}
+            type='text'
+            placeholder='Buscar...'
+            endAdornment={
+              <InputAdornment position='end'>
+                <IconButton onClick={() => setIsSearchVisible(false)}>
+                  <ClearOutlined />
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+        ) : (
+          <IconButton
+            className='fadeIn'
+            onClick={() => setIsSearchVisible(true)}
+            sx={{ display: { xs: 'none', sm: 'flex' } }}
+          >
+            <SearchOutlinedIcon />
+          </IconButton>
+        )}
+
+        {/* Pantallas pequeñas */}
+        <IconButton
+          sx={{ display: { xs: 'flex', sm: 'none' } }}
+          onClick={toggleSideMenu}
+        >
           <SearchOutlinedIcon />
         </IconButton>
 
@@ -79,8 +139,7 @@ export const Navbar = () => {
           </Link>
         </NextLink>
 
-        <Button onClick={toggleSideMenu}>
-        Menu</Button>
+        <Button onClick={toggleSideMenu}>Menu</Button>
       </Toolbar>
     </AppBar>
   )
