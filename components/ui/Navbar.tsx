@@ -41,21 +41,21 @@ export const Navbar = () => {
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <NextLink href={'/category/men'} passHref>
             <Link>
-              <Button color={asPath.includes('/men') ? 'primary' : 'info'}>
+              <Button color={asPath.includes('category/men') ? 'primary' : 'info'}>
                 Hombres
               </Button>
             </Link>
           </NextLink>
           <NextLink href={'/category/women'} passHref>
             <Link>
-              <Button color={asPath.includes('/women') ? 'primary' : 'info'}>
+              <Button color={asPath.includes('category/women') ? 'primary' : 'info'}>
                 Mujeres
               </Button>
             </Link>
           </NextLink>
           <NextLink href={'/category/kid'} passHref>
             <Link>
-              <Button color={asPath.includes('/kid') ? 'primary' : 'info'}>
+              <Button color={asPath.includes('category/kid') ? 'primary' : 'info'}>
                 Niños
               </Button>
             </Link>
