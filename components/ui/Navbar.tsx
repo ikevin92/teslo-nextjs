@@ -1,4 +1,4 @@
-import NextLink from 'next/link';
+import NextLink from 'next/link'
 import {
   AppBar,
   Badge,
@@ -8,17 +8,20 @@ import {
   Link,
   Toolbar,
   Typography,
-} from '@mui/material';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import { ShoppingCartOutlined } from '@mui/icons-material';
+} from '@mui/material'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import { ShoppingCartOutlined } from '@mui/icons-material'
+import { useRouter } from 'next/router'
 
 export const Navbar = () => {
+  const { asPath } = useRouter()
+
   return (
     <AppBar>
       <Toolbar>
-        <NextLink href="/" passHref>
-          <Link display={'flex'} alignItems="center">
-            <Typography variant="h6">Teslo |</Typography>
+        <NextLink href='/' passHref>
+          <Link display={'flex'} alignItems='center'>
+            <Typography variant='h6'>Teslo |</Typography>
             <Typography
               sx={{
                 ml: 0.5,
@@ -35,17 +38,23 @@ export const Navbar = () => {
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <NextLink href={'/category/men'} passHref>
             <Link>
-              <Button>Hombres</Button>
+              <Button color={asPath.includes('/men') ? 'primary' : 'info'}>
+                Hombres
+              </Button>
             </Link>
           </NextLink>
           <NextLink href={'/category/women'} passHref>
             <Link>
-              <Button>Mujeres</Button>
+              <Button color={asPath.includes('/women') ? 'primary' : 'info'}>
+                Mujeres
+              </Button>
             </Link>
           </NextLink>
           <NextLink href={'/category/kid'} passHref>
             <Link>
-              <Button>Niños</Button>
+              <Button color={asPath.includes('/kid') ? 'primary' : 'info'}>
+                Niños
+              </Button>
             </Link>
           </NextLink>
         </Box>
@@ -57,10 +66,10 @@ export const Navbar = () => {
           <SearchOutlinedIcon />
         </IconButton>
 
-        <NextLink href="/cart" passHref>
+        <NextLink href='/cart' passHref>
           <Link>
             <IconButton>
-              <Badge badgeContent={2} color="secondary">
+              <Badge badgeContent={2} color='secondary'>
                 <ShoppingCartOutlined />
               </Badge>
             </IconButton>
@@ -70,5 +79,5 @@ export const Navbar = () => {
         <Button>Menu</Button>
       </Toolbar>
     </AppBar>
-  );
-};
+  )
+}
