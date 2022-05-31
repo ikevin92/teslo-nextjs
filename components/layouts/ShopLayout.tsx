@@ -35,6 +35,7 @@ export const ShopLayout = ({
         style={{
           margin: '80px auto',
           maxWidth: '1440px',
+          padding: '0px 1rem',
         }}
       >
         {children}
