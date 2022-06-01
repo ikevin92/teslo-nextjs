@@ -36,7 +36,7 @@ const ProductPage: NextPage<Props> = ({ product }) => {
     // TODO: Llamar la funcion del context para agregar al carrito
     console.log('add product', tempCartProduct)
     addProductToCart(tempCartProduct)
-    // router.push('/cart')
+    router.push('/cart')
   }
 
   const selectedSize = (size: ISize) => {
