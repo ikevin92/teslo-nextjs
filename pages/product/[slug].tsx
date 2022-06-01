@@ -1,10 +1,11 @@
+import { useState } from 'react'
 import { NextPage, GetStaticPaths, GetStaticProps } from 'next'
 import { Box, Button, Chip, Grid, Typography } from '@mui/material'
 import { ShopLayout } from '../../components/layouts/ShopLayout'
 // import { initialData } from '../../database/products'
 import { ProductSlideShow, SizeSelector } from '../../components/products'
 import { ItemCounter } from '../../components/ui'
-import { IProduct } from '../../interfaces'
+import { ICartProduct, IProduct, ISize } from '../../interfaces'
 import { dbProducts } from '../../database'
 
 interface Props {
@@ -12,6 +13,24 @@ interface Props {
 }
 
 const ProductPage: NextPage<Props> = ({ product }) => {
+  const [tempCartProduct, setTempCartProduct] = useState<ICartProduct>({
+    _id: product._id,
+    image: product.images[0],
+    price: product.price,
+    size: undefined,
+    slug: product.slug,
+    title: product.title,
+    gender: product.gender,
+    quantity: 1,
+  })
+
+  const selectedSize = (size: ISize) => {
+    setTempCartProduct((currentProduct) => ({
+      ...currentProduct,
+      size,
+    }))
+  }
+
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
       <Grid container spacing={3}>
@@ -30,21 +49,31 @@ const ProductPage: NextPage<Props> = ({ product }) => {
               {`$${product.price}`}
             </Typography>
 
-            {/* cantidad */}
+            {/* cantidad y talla*/}
             <Box sx={{ my: 2 }}>
               <Typography variant='subtitle2'>Cantidad</Typography>
               <ItemCounter />
               <SizeSelector
-                // selectedSize={product.sizes[0]}
+                selectedSize={tempCartProduct.size}
                 sizes={product.sizes}
+                onSelectedSize={(size) => selectedSize(size)}
               />
             </Box>
 
             {/* agregar al carrito */}
-            <Button color='secondary' className='circular-btn'>
-              Agregar al carrito
-            </Button>
-            {/* <Chip label='No hay disponibles' color='error' variant='outlined' /> */}
+            {product.inStock > 0 ? (
+              <Button color='secondary' className='circular-btn'>
+                {tempCartProduct.size
+                  ? 'Agregar al carrito'
+                  : 'Seleccione una talla'}
+              </Button>
+            ) : (
+              <Chip
+                label='No hay disponibles'
+                color='error'
+                variant='outlined'
+              />
+            )}
             <Box sx={{ mt: 3 }}>
               <Typography variant='subtitle2'>Descripción</Typography>
               <Typography variant='body2'>{product.description}</Typography>
