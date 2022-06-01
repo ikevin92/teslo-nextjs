@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { NextPage, GetStaticPaths, GetStaticProps } from 'next'
 import { Box, Button, Chip, Grid, Typography } from '@mui/material'
 // import { initialData } from '../../database/products'
@@ -7,12 +7,18 @@ import { ProductSlideShow, SizeSelector } from '../../components/products'
 import { ItemCounter } from '../../components/ui'
 import { ICartProduct, IProduct, ISize } from '../../interfaces'
 import { dbProducts } from '../../database'
+import { useRouter } from 'next/router'
+import { CartContext } from '../../context'
 
 interface Props {
   product: IProduct
 }
 
 const ProductPage: NextPage<Props> = ({ product }) => {
+  const router = useRouter()
+
+  const { addProductToCart } = useContext(CartContext)
+
   const [tempCartProduct, setTempCartProduct] = useState<ICartProduct>({
     _id: product._id,
     image: product.images[0],
@@ -25,7 +31,12 @@ const ProductPage: NextPage<Props> = ({ product }) => {
   })
 
   const onAddProduct = () => {
+    if (!tempCartProduct.size) return
+
+    // TODO: Llamar la funcion del context para agregar al carrito
     console.log('add product', tempCartProduct)
+    addProductToCart(tempCartProduct)
+    // router.push('/cart')
   }
 
   const selectedSize = (size: ISize) => {
@@ -80,6 +91,7 @@ const ProductPage: NextPage<Props> = ({ product }) => {
                 onClick={onAddProduct}
                 color='secondary'
                 className='circular-btn'
+                disabled={!tempCartProduct.size}
               >
                 {tempCartProduct.size
                   ? 'Agregar al carrito'
