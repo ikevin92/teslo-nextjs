@@ -12,7 +12,6 @@ interface Props {
 }
 
 const ProductPage: NextPage<Props> = ({ product }) => {
-
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
       <Grid container spacing={3}>
@@ -56,30 +55,6 @@ const ProductPage: NextPage<Props> = ({ product }) => {
     </ShopLayout>
   )
 }
-
-// You should use getServerSideProps when:
-// - Only if you need to pre-render a page whose data must be fetched at request time
-
-/** no usar esto SSR */
-// export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-//   const { slug = '' } = params as { slug: string }
-//   const product = await dbProducts.getProductBySlug(slug)
-
-//   if (!product) {
-//     return {
-//       redirect: {
-//         destination: '/',
-//         permanent: false,
-//       },
-//     }
-//   }
-
-//   return {
-//     props: {
-//       product,
-//     },
-//   }
-// }
 
 // getStaticPaths..
 // You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
@@ -126,3 +101,27 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 }
 
 export default ProductPage
+
+// You should use getServerSideProps when:
+// - Only if you need to pre-render a page whose data must be fetched at request time
+
+/** no usar esto SSR */
+// export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+//   const { slug = '' } = params as { slug: string }
+//   const product = await dbProducts.getProductBySlug(slug)
+
+//   if (!product) {
+//     return {
+//       redirect: {
+//         destination: '/',
+//         permanent: false,
+//       },
+//     }
+//   }
+
+//   return {
+//     props: {
+//       product,
+//     },
+//   }
+// }
