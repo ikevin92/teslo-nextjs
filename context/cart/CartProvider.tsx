@@ -1,13 +1,22 @@
-import { FC, useReducer } from 'react'
+import { FC, useReducer, useEffect, useRef } from 'react'
 import { ICartProduct } from '../../interfaces'
+import Cookie from 'js-cookie'
 import { CartContext, cartReducer } from './'
 
 export interface CartState {
   cart: ICartProduct[]
+  numberOfItems: number
+  subTotal: number
+  tax: number
+  total: number
 }
 
 const CART_INITIAL_STATE: CartState = {
   cart: [],
+  numberOfItems: 0,
+  subTotal: 0,
+  tax: 0,
+  total: 0,
 }
 
 interface CartProviderProps {
@@ -16,6 +25,60 @@ interface CartProviderProps {
 
 export const CartProvider: FC<CartProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, CART_INITIAL_STATE)
+
+  const isCartReloading = useRef(true)
+
+  // * Load cart from cookie
+  useEffect(() => {
+    try {
+      const cookieProducts = Cookie.get('cart')
+        ? JSON.parse(Cookie.get('cart')!)
+        : []
+      dispatch({
+        type: '[Cart] - LoadCart from cookies | storage',
+        payload: cookieProducts,
+      })
+    } catch (error) {
+      dispatch({
+        type: '[Cart] - LoadCart from cookies | storage',
+        payload: [],
+      })
+    }
+  }, [])
+
+  // * Se envia la info del carrito cada vez que se actualice el state
+  useEffect(() => {
+    if (isCartReloading.current) {
+      isCartReloading.current = false
+    } else {
+      Cookie.set('cart', JSON.stringify(state.cart))
+    }
+  }, [state.cart])
+
+  //* actualizamos la orden cuando exitan cambios en el carrito
+  useEffect(() => {
+    const numberOfItems = state.cart.reduce(
+      (prev, current) => current.quantity + prev,
+      0
+    )
+    const subTotal = state.cart.reduce(
+      (prev, current) => current.price * current.quantity + prev,
+      0
+    )
+    const taxRate = Number(process.env.NEXT_PUBLIC_TAX_RATE || 0)
+
+    const orderSummary = {
+      numberOfItems,
+      subTotal,
+      tax: subTotal * taxRate,
+      total: subTotal * (taxRate + 1),
+    }
+
+    dispatch({
+      type: '[Cart] - Update order summary',
+      payload: orderSummary,
+    })
+  }, [state.cart])
 
   const addProductToCart = (product: ICartProduct) => {
     // ! Nivel 1
@@ -53,19 +116,29 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
 
       return p
     })
-    
+
     dispatch({
       type: '[Cart] - Update products in cart',
       payload: updatedProducts,
     })
   }
 
+  const updateCartQuantity = (product: ICartProduct) => {
+    dispatch({ type: '[Cart] - Change cart quantity', payload: product })
+  }
+
+  const removeCartProduct = (product: ICartProduct) => {
+    dispatch({ type: '[Cart] - Remove product in cart', payload: product })
+  }
+
   return (
     <CartContext.Provider
       value={{
         ...state,
-        //Methods
+        // Methods
         addProductToCart,
+        removeCartProduct,
+        updateCartQuantity,
       }}
     >
       {children}
