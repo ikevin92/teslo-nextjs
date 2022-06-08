@@ -1,4 +1,4 @@
-import { FC, useReducer } from 'react'
+import { FC, useReducer, useEffect } from 'react'
 import axios, { AxiosError } from 'axios'
 import Cookies from 'js-cookie'
 import { tesloApi } from '../../api'
@@ -22,6 +22,21 @@ interface AuthProviderProps {
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, AUTH_INITIAL_STATE)
 
+  useEffect(() => {
+    checkToken()
+  }, [])
+
+  const checkToken = async () => {
+    try {
+      const { data } = await tesloApi.get('/user/validate-token')
+      const { token, user } = data
+      Cookies.set('token', token)
+      dispatch({ type: '[Auth] - Login', payload: user })
+    } catch (error) {
+      Cookies.remove('token')
+    }
+  }
+
   const loginUser = async (
     email: string,
     password: string
@@ -41,7 +56,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const registerUser = async (
     name: string,
     email: string,
-    password: string,
+    password: string
   ): Promise<{ hasError: boolean; message?: string }> => {
     try {
       const { data } = await tesloApi.post('/user/register', {
@@ -85,6 +100,5 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   )
 }
-
 
 //https://codesandbox.io/s/mj0dq?file=/src/App.tsx:635-646
