@@ -45,8 +45,10 @@ const LoginPage = () => {
         setShowError(false)
       }, 3000)
     }
+
     // TODO: navegar a la pantalla que el usuario estaba
-    router.replace('/')
+    const destination = router.query.p?.toString() || '/'
+    router.replace(destination)
   }
 
   return (
@@ -74,7 +76,6 @@ const LoginPage = () => {
                 fullWidth
                 {...register('email', {
                   required: 'Este campo es requerido',
-                  // pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
                   validate: validations.isEmail,
                 })}
                 error={!!errors.email}
@@ -110,7 +111,14 @@ const LoginPage = () => {
               </Button>
             </Grid>
             <Grid item xs={12} display='flex' justifyContent={'end'}>
-              <NextLink href={'/auth/register'} passHref>
+              <NextLink
+                href={
+                  router.query.p
+                    ? `/auth/register?p=/${router.query.p}`
+                    : '/auth/register'
+                }
+                passHref
+              >
                 <Link underline='always'>No tienes cuenta?</Link>
               </NextLink>
             </Grid>
