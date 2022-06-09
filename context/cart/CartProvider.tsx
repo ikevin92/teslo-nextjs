@@ -4,6 +4,7 @@ import Cookie from 'js-cookie'
 import { CartContext, cartReducer } from './'
 
 export interface CartState {
+  isLoaded: boolean
   cart: ICartProduct[]
   numberOfItems: number
   subTotal: number
@@ -12,6 +13,7 @@ export interface CartState {
 }
 
 const CART_INITIAL_STATE: CartState = {
+  isLoaded: false,
   cart: [],
   numberOfItems: 0,
   subTotal: 0,
@@ -34,6 +36,7 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
       const cookieProducts = Cookie.get('cart')
         ? JSON.parse(Cookie.get('cart')!)
         : []
+      
       dispatch({
         type: '[Cart] - LoadCart from cookies | storage',
         payload: cookieProducts,

@@ -20,6 +20,10 @@ export const isValidToken = (token: string): Promise<string> => {
     throw new Error('JWT_SECRET is not defined - revisar variables de entorno')
   }
 
+  if (token.length <=10) {
+    return Promise.reject('Token inválido')
+  }
+
   return new Promise((resolve, reject) => {
     try {
       jwt.verify(token, process.env.JWT_SECRET_SEED || '', (err, payload) => {
