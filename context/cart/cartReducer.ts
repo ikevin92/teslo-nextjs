@@ -10,6 +10,7 @@ type CartActionType =
   | { type: '[Cart] - Change cart quantity'; payload: ICartProduct }
   | { type: '[Cart] - Remove product in cart'; payload: ICartProduct }
   | { type: '[Cart] - LoadAddress from Cookies'; payload: ShippingAddress }
+  | { type: '[Cart] - Update Address'; payload: ShippingAddress }
   | {
       type: '[Cart] - Update order summary'
       payload: {
@@ -66,6 +67,7 @@ export const cartReducer = (
         ...action.payload,
       }
 
+    case '[Cart] - Update Address':
     case '[Cart] - LoadAddress from Cookies':
       return {
         ...state,
