@@ -1,5 +1,4 @@
-import { useState, useContext } from 'react'
-import NextLink from 'next/link'
+import { ErrorOutline } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -7,14 +6,17 @@ import {
   Grid,
   Link,
   TextField,
-  Typography,
+  Typography
 } from '@mui/material'
-import { AuthLayout } from '../../components/layouts'
-import { useForm } from 'react-hook-form'
-import { validations } from '../../utils'
-import { ErrorOutline } from '@mui/icons-material'
+import { GetServerSideProps } from 'next'
+import { getSession, signIn } from 'next-auth/react'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { useContext, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { AuthLayout } from '../../components/layouts'
 import { AuthContext } from '../../context'
+import { validations } from '../../utils'
 
 type FormData = {
   name: string
@@ -47,8 +49,11 @@ const RegisterPage = () => {
       }, 3000)
       return
     }
+    // navegar a la pantalla donde estaba el usuario
+    // const destination = router.query.p?.toString() || '/'
+    // router.replace(destination)
 
-    router.replace('/')
+    await signIn('credentials', { email, password })
   }
 
   return (
@@ -145,4 +150,28 @@ const RegisterPage = () => {
     </AuthLayout>
   )
 }
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
+  const session = await getSession({ req })
+
+  // mantener el parametro
+  const { p = '/' } = query
+
+  if (session) {
+    return {
+      redirect: {
+        destination: p.toString(),
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {},
+  }
+}
+
 export default RegisterPage

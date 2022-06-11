@@ -1,6 +1,6 @@
 import { db } from '.'
-import { Product } from '../models'
 import { IProduct } from '../interfaces'
+import { Product } from '../models'
 
 export const getProductBySlug = async (
   slug: string
@@ -41,7 +41,6 @@ export const getProductsByTerm = async (term: string): Promise<IProduct[]> => {
 
   return JSON.parse(JSON.stringify(products))
 }
-
 
 export const getAllProducts = async (): Promise<IProduct[]> => {
   await db.connect()

@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth'
-import GithubProvider from 'next-auth/providers/github'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import jwt from 'jsonwebtoken';
+import GithubProvider from 'next-auth/providers/github'
+import { dbUsers } from '../../../database'
 
 export default NextAuth({
   // Configure one or more authentication providers
@@ -9,7 +9,6 @@ export default NextAuth({
     // ...add more providers here
     CredentialsProvider({
       name: 'Custom Login',
-
       credentials: {
         email: {
           label: 'Correo:',
@@ -22,11 +21,15 @@ export default NextAuth({
           placeholder: 'Contraseña',
         },
       },
-      async authorize(credentials, req) {
-        console.log('crdentials', credentials)
-        // VALIDA CONTRA BD
+      async authorize(credentials) {
+        console.log({ credentials })
+        // return { name: 'Juan', correo: 'juan@google.com', role: 'admin' }
 
-        return null
+        // VALIDA CONTRA BD
+        return await dbUsers.checkUserEmailPassword(
+          credentials!.email,
+          credentials!.password
+        )
       },
     }),
     GithubProvider({
@@ -34,16 +37,54 @@ export default NextAuth({
       clientSecret: process.env.GITHUB_SECRET,
     }),
   ],
+
+  // Custom Pages
+  pages: {
+    signIn: '/auth/login',
+    newUser: '/auth/register',
+  },
+
+  // CALLBACKS
+  jwt: {
+    // secret: process.env.JWT_SECRET_SEED, // deprecated
+  },
+
+  // duracion de la sesion
+  session: {
+    maxAge: 2592000, /// 30d
+    strategy: 'jwt',
+    updateAge: 86400, // cada día
+  },
+
+  callbacks: {
+    async jwt({ token, account, user }) {
+      // console.log({ token, account, user })
+
+      if (account) {
+        token.accessToken = account.access_token
+
+        switch (account.type) {
+          case 'oauth':
+            // crear usuario o verificar si existe
+            token.user = await dbUsers.oAuthToDbUser(
+              user?.email || '',
+              user?.name || ''
+            )
+            break
+          case 'credentials':
+            token.user = user
+            break
+        }
+      }
+      return token
+    },
+    async session({ session, token, user }) {
+      // console.log({ token, session, user })
+
+      session.accessToken = token.accessToken
+      session.user = token.user as any
+
+      return session
+    },
+  },
 })
-
-
-
-// CALLBACKS
-jwt: {
-  // secret: process.env.JWT_SECRET_SEED
-}
-
-callbacks: {
-  
-  
-}
