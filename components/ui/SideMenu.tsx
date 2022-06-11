@@ -36,7 +36,6 @@ export const SideMenu = () => {
   const [searchTerm, setSearchTerm] = useState<string>('')
 
   const onSearchTerm = () => {
-    console.log('se ejecuto')
     if (searchTerm.trim().length === 0) return
     navigateTo(`/search/${searchTerm}`)
   }

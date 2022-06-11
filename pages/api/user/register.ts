@@ -74,7 +74,7 @@ const registerUser = async (
     await newUser.save({ validateBeforeSave: true })
     await db.disconnect()
   } catch (error) {
-    console.log(error)
+    console.warn(error)
     await db.disconnect()
     return res.status(500).json({ message: 'Error al registrar usuario' })
   }
