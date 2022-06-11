@@ -60,6 +60,8 @@ const AddresPage = () => {
     router.push('/checkout/summary')
   }
 
+  
+
   return (
     <ShopLayout
       title={'Direccion'}

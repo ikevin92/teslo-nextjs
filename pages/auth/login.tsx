@@ -1,20 +1,22 @@
-import { useState, useContext } from 'react'
+import { ErrorOutline } from '@mui/icons-material'
+import { GetServerSideProps } from 'next'
 import {
   Box,
   Button,
+  Chip,
+  Divider,
   Grid,
   Link,
   TextField,
   Typography,
-  Chip,
 } from '@mui/material'
+import { getProviders, getSession, signIn } from 'next-auth/react'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { ErrorOutline } from '@mui/icons-material'
 import { AuthLayout } from '../../components/layouts'
 import { validations } from '../../utils'
-import { AuthContext } from '../../context'
 
 type FormData = {
   email: string
@@ -24,7 +26,7 @@ type FormData = {
 const LoginPage = () => {
   const router = useRouter()
 
-  const { loginUser } = useContext(AuthContext)
+  // const { loginUser } = useContext(AuthContext)
 
   const {
     register,
@@ -34,21 +36,32 @@ const LoginPage = () => {
 
   const [showError, setShowError] = useState<boolean>(false)
 
+  const [providers, setProviders] = useState<any>({})
+
+  useEffect(() => {
+    getProviders().then((prov) => {
+      console.log({ prov })
+      setProviders(prov)
+    })
+  }, [])
+
   const onLoginUser = async ({ email, password }: FormData) => {
     setShowError(false)
 
-    const isValidLogin = await loginUser(email, password)
+    // const isValidLogin = await loginUser(email, password)
 
-    if (!isValidLogin) {
-      setShowError(true)
-      setTimeout(() => {
-        setShowError(false)
-      }, 3000)
-    }
+    // if (!isValidLogin) {
+    //   setShowError(true)
+    //   setTimeout(() => {
+    //     setShowError(false)
+    //   }, 3000)
+    // }
 
-    // TODO: navegar a la pantalla que el usuario estaba
-    const destination = router.query.p?.toString() || '/'
-    router.replace(destination)
+    // // TODO: navegar a la pantalla que el usuario estaba
+    // const destination = router.query.p?.toString() || '/'
+    // router.replace(destination)
+    // * NexAuth
+    await signIn('credentials', { email, password })
   }
 
   return (
@@ -122,10 +135,62 @@ const LoginPage = () => {
                 <Link underline='always'>No tienes cuenta?</Link>
               </NextLink>
             </Grid>
+
+            <Grid
+              item
+              xs={12}
+              display='flex'
+              flexDirection={'column'}
+              justifyContent={'end'}
+            >
+              <Divider sx={{ width: '100%', mb: 2 }} />
+              {Object.values(providers).map((provider: any) => {
+                if (provider.id === 'credentials') return null
+                return (
+                  <Button
+                    key={provider.id}
+                    variant='outlined'
+                    fullWidth
+                    color='primary'
+                    sx={{ mb: 1 }}
+                    onClick={() => signIn(provider.id)}
+                  >
+                    {provider.name}
+                  </Button>
+                )
+              })}
+            </Grid>
           </Grid>
         </Box>
       </form>
     </AuthLayout>
   )
 }
+
+// You should use getServerSideProps when:
+// - Only if you need to pre-render a page whose data must be fetched at request time
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
+  const session = await getSession({ req })
+
+  // mantener el parametro
+  const { p = '/' } = query
+
+  if (session) {
+    return {
+      redirect: {
+        destination: p.toString(),
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {},
+  }
+}
+
 export default LoginPage
