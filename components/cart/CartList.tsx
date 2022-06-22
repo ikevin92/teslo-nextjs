@@ -9,15 +9,17 @@ import {
   Link,
   Typography,
 } from '@mui/material'
+
 import { ItemCounter } from '../ui'
 import { CartContext } from '../../context'
-import { ICartProduct } from '../../interfaces'
+import { ICartProduct, IOrderItem } from '../../interfaces'
 
 interface Props {
   editable?: boolean
+  products?: IOrderItem[]
 }
 
-export const CartList: FC<Props> = ({ editable = false }) => {
+export const CartList: FC<Props> = ({ editable = false, products }) => {
   const { cart, updateCartQuantity, removeCartProduct } =
     useContext(CartContext)
 
@@ -29,9 +31,11 @@ export const CartList: FC<Props> = ({ editable = false }) => {
     updateCartQuantity(product)
   }
 
+  const productsToShow = products ? products : cart
+
   return (
     <>
-      {cart.map((product) => (
+      {productsToShow.map((product) => (
         <Grid
           container
           spacing={2}
@@ -39,6 +43,7 @@ export const CartList: FC<Props> = ({ editable = false }) => {
           sx={{ mb: 1 }}
         >
           <Grid item xs={3}>
+            {/* TODO: llevar a la página del producto */}
             <NextLink href={`/product/${product.slug}`} passHref>
               <Link>
                 <CardActionArea>
@@ -52,24 +57,24 @@ export const CartList: FC<Props> = ({ editable = false }) => {
             </NextLink>
           </Grid>
           <Grid item xs={7}>
-            <Box display={'flex'} flexDirection='column'>
+            <Box display='flex' flexDirection='column'>
               <Typography variant='body1'>{product.title}</Typography>
               <Typography variant='body1'>
-                Talla: <strong>{product.size}</strong>{' '}
+                Talla: <strong>{product.size}</strong>
               </Typography>
-              {/* Condicional */}
+
               {editable ? (
                 <ItemCounter
                   currentValue={product.quantity}
                   maxValue={10}
-                  updateQuantity={(value) =>
-                    onNewCartQuantityValue(product, value)
+                  updatedQuantity={(value) =>
+                    onNewCartQuantityValue(product as ICartProduct, value)
                   }
                 />
               ) : (
-                <Typography variant='h4'>
+                <Typography variant='h5'>
                   {product.quantity}{' '}
-                  {product.quantity > 1 ? 'produdctos' : 'producto'}
+                  {product.quantity > 1 ? 'productos' : 'producto'}
                 </Typography>
               )}
             </Box>
@@ -78,16 +83,16 @@ export const CartList: FC<Props> = ({ editable = false }) => {
             item
             xs={2}
             display='flex'
-            alignItems={'center'}
+            alignItems='center'
             flexDirection='column'
           >
             <Typography variant='subtitle1'>{`$${product.price}`}</Typography>
-            {/* editable  */}
+
             {editable && (
               <Button
-                onClick={() => removeCartProduct(product)}
                 variant='text'
                 color='secondary'
+                onClick={() => removeCartProduct(product as ICartProduct)}
               >
                 Remover
               </Button>

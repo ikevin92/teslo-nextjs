@@ -1,6 +1,8 @@
-import { FC, useReducer, useEffect, useRef } from 'react'
+import axios, { AxiosError } from 'axios'
 import Cookie from 'js-cookie'
-import { ICartProduct, ShippingAddress } from '../../interfaces'
+import { FC, useEffect, useReducer, useRef } from 'react'
+import tesloApi from '../../api/tesloApi'
+import { ICartProduct, IOrder, ShippingAddress } from '../../interfaces'
 import { CartContext, cartReducer } from './'
 
 export interface CartState {
@@ -168,6 +170,49 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
     dispatch({ type: '[Cart] - Update Address', payload: address })
   }
 
+  const createOrder = async (): Promise<{
+    hasError: boolean
+    message: string
+  }> => {
+    if (!state.shippingAddress) {
+      throw new Error('No se puede crear la orden sin dirección de envío')
+    }
+
+    const body: IOrder = {
+      orderItems: state.cart.map((product) => ({
+        ...product,
+        size: product.size!,
+      })),
+      shippingAddress: state.shippingAddress,
+      numberOfItems: state.numberOfItems,
+      subTotal: state.subTotal,
+      tax: state.tax,
+      total: state.total,
+      isPaid: false,
+    }
+
+    try {
+      const { data } = await tesloApi.post<IOrder>('/orders', body)
+      // TODO: dispatch de accion
+
+      dispatch({ type: '[Cart] - Order Complete' })
+      return { hasError: false, message: data._id! }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const error = err as AxiosError
+        return {
+          hasError: true,
+          message: error.message,
+        }
+      }
+
+      return {
+        hasError: true,
+        message: 'Error no controlado, hable con el administrador',
+      }
+    }
+  }
+
   return (
     <CartContext.Provider
       value={{
@@ -177,6 +222,8 @@ export const CartProvider: FC<CartProviderProps> = ({ children }) => {
         removeCartProduct,
         updateCartQuantity,
         updateAddress,
+        // Orders
+        createOrder,
       }}
     >
       {children}
