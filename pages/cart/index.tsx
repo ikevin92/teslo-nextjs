@@ -9,7 +9,7 @@ import {
   Grid,
   Typography,
 } from '@mui/material'
-import { CartList, OrderSumary } from '../../components/cart'
+import { CartList, OrderSummary } from '../../components/cart'
 import { ShopLayout } from '../../components/layouts/ShopLayout'
 import { CartContext } from '../../context'
 
@@ -46,7 +46,7 @@ const CartPage = () => {
               <Typography variant='h2'>Orden</Typography>
               <Divider sx={{ my: 1 }} />
 
-              <OrderSumary />
+              <OrderSummary />
 
               <Box sx={{ mt: 3 }}>
                 <Button
