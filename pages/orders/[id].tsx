@@ -1,4 +1,4 @@
-import { CreditScoreOutlined } from '@mui/icons-material'
+import { CreditCardOutlined, CreditScoreOutlined } from '@mui/icons-material'
 import {
   Box,
   Card,
@@ -8,6 +8,7 @@ import {
   Grid,
   Typography,
 } from '@mui/material'
+import { PayPalButtons } from '@paypal/react-paypal-js'
 import { GetServerSideProps, NextPage } from 'next'
 import { getSession } from 'next-auth/react'
 import { useState } from 'react'
@@ -33,20 +34,23 @@ const OrderPage: NextPage<Props> = ({ order }) => {
         Orden: {order._id}
       </Typography>
 
-      {/* <Chip
-        sx={{ my: 2 }}
-        label='Pendiente de pago'
-        variant='outlined'
-        color='error'
-        icon={<CreditCardOutlined />}
-      /> */}
-      <Chip
-        sx={{ my: 2 }}
-        label='Orden ya fue Pagada'
-        variant='outlined'
-        color='success'
-        icon={<CreditScoreOutlined />}
-      />
+      {order.isPaid ? (
+        <Chip
+          sx={{ my: 2 }}
+          label='Orden ya fue Pagada'
+          variant='outlined'
+          color='success'
+          icon={<CreditScoreOutlined />}
+        />
+      ) : (
+        <Chip
+          sx={{ my: 2 }}
+          label='Pendiente de pago'
+          variant='outlined'
+          color='error'
+          icon={<CreditCardOutlined />}
+        />
+      )}
 
       <Grid container className='fadeIn'>
         <Grid item xs={12} sm={7}>
@@ -108,7 +112,26 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                     icon={<CreditScoreOutlined />}
                   />
                 ) : (
-                  <h1>Pagar</h1>
+                  <PayPalButtons
+                    createOrder={(data, actions) => {
+                      return actions.order.create({
+                        purchase_units: [
+                          {
+                            amount: {
+                              value: '2000',
+                            },
+                          },
+                        ],
+                      })
+                    }}
+                    onApprove={(data, actions) => {
+                      return actions.order!.capture().then((details) => {
+                        console.log("🚀 ~ file: [id].tsx ~ line 129 ~ returnactions.order!.capture ~ details", {details})
+                        const name = details.payer!.name!.given_name
+                        alert(`Transaction completed by ${name}`)
+                      })
+                    }}
+                  />
                 )}
               </Box>
             </CardContent>
