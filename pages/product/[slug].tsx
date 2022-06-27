@@ -74,7 +74,7 @@ const ProductPage: NextPage<Props> = ({ product }) => {
               <Typography variant='subtitle2'>Cantidad</Typography>
               <ItemCounter
                 currentValue={tempCartProduct.quantity}
-                updateQuantity={onUpdateQuantity}
+                updatedQuantity={onUpdateQuantity}
                 maxValue={product.inStock > 10 ? 10 : product.inStock}
               />
               <SizeSelector
