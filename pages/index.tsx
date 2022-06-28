@@ -10,7 +10,7 @@ import { useProducts } from '../hooks'
 const HomePage: NextPage = () => {
 
   const session = useSession()
-  console.log(session);
+  // console.log(session);
   const { products, isLoading } = useProducts('/products')
 
   return (
