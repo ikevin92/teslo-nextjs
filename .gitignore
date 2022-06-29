@@ -5,6 +5,11 @@ mongo/
 /.pnp
 .pnp.js
 
+#env
+.env
+.env.development
+.env.production
+
 # testing
 /coverage
 
